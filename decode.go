@@ -1,6 +1,7 @@
 package toml
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -458,6 +459,12 @@ func (md *MetaData) unifyText(data interface{}, v TextUnmarshaler) error {
 		s = fmt.Sprintf("%d", sdata)
 	case float64:
 		s = fmt.Sprintf("%f", sdata)
+	case map[string]interface{}:
+		var buf bytes.Buffer
+		if err := NewEncoder(&buf).Encode(sdata); err != nil {
+			return err
+		}
+		s = buf.String()
 	default:
 		return badtype("primitive (string-like)", data)
 	}
